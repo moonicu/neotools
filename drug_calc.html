@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>신생아 약물 용량 계산기</title>
+  <style>
+    body { font-family: sans-serif; padding: 2em; max-width: 600px; margin: auto; }
+    input, select, button { margin: 0.5em 0; padding: 0.5em; width: 100%; }
+    .result { margin-top: 1em; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>🍼 신생아 약물 용량 계산기</h2>
+
+  <label for="weight">체중 (kg):</label>
+  <input type="number" id="weight" placeholder="예: 2.5" step="0.01"/>
+
+  <label for="drug">약물 선택:</label>
+  <select id="drug">
+    <option value="ampicillin">Ampicillin (50mg/kg/dose)</option>
+    <option value="gentamicin">Gentamicin (5mg/kg/dose)</option>
+  </select>
+
+  <button onclick="calculateDose()">계산하기</button>
+
+  <div class="result" id="output"></div>
+  <button onclick="copyResult()">📋 결과 복사</button>
+  <button onclick="downloadResult()">💾 txt 저장</button>
+
+  <script>
+    function calculateDose() {
+      const weight = parseFloat(document.getElementById("weight").value);
+      const drug = document.getElementById("drug").value;
+      let dose = 0;
+      let message = "";
+
+      if (isNaN(weight) || weight <= 0) {
+        alert("유효한 체중을 입력하세요.");
+        return;
+      }
+
+      if (drug === "ampicillin") {
+        dose = 50 * weight;
+        message = `Ampicillin: ${dose.toFixed(1)} mg (1회 용량)`;
+      } else if (drug === "gentamicin") {
+        dose = 5 * weight;
+        message = `Gentamicin: ${dose.toFixed(2)} mg (1회 용량)`;
+      }
+
+      document.getElementById("output").innerText = `✅ 결과: ${message}`;
+    }
+
+    function copyResult() {
+      const text = document.getElementById("output").innerText;
+      navigator.clipboard.writeText(text).then(() => alert("복사되었습니다!"));
+    }
+
+    function downloadResult() {
+      const text = document.getElementById("output").innerText;
+      const blob = new Blob([text], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "dose_result.txt";
+      link.click();
+    }
+  </script>
+</body>
+</html>
