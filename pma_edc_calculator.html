@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>PMA & EDC 계산기</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 2rem; }
+    label { font-weight: bold; display: block; margin-top: 1.5rem; }
+    .inline { display: flex; gap: 0.5rem; align-items: center; }
+    input[type="number"], input[type="date"] {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    .result { margin-top: 2rem; font-size: 1.2rem; }
+    .copy-box { margin-top: 2rem; background: #f3f3f3; padding: 1rem; border-radius: 8px; cursor: pointer; white-space: pre-line; }
+  </style>
+</head>
+<body>
+
+  <h2>👶 PMA (수정 후 연령) & EDC (출생예정일) 계산기</h2>
+
+  <label>재태연령:</label>
+  <div class="inline">
+    <input type="number" id="gaw" min="20" max="45" value="30" />
+    +
+    <input type="number" id="gawd" min="0" max="6" value="0" />
+  </div>
+
+  <label>출생일:</label>
+  <input type="date" id="birthDate" />
+
+  <label>기준일 (Optional, 비워두면 오늘):</label>
+  <input type="date" id="referenceDate" />
+
+  <div class="result" id="result"></div>
+
+  <div class="copy-box" id="summaryBox" onclick="copySummary()">
+    결과가 여기에 표시됩니다 (클릭하면 복사됩니다)
+  </div>
+
+  <script>
+    function formatDate(date) {
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const dd = String(date.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function calculatePMA() {
+      const gaw = parseInt(document.getElementById('gaw').value);
+      const gawd = parseInt(document.getElementById('gawd').value);
+      const birthInput = document.getElementById('birthDate').value;
+      const refInput = document.getElementById('referenceDate').value;
+      const refDate = refInput ? new Date(refInput) : new Date();
+
+      if (isNaN(gaw) || isNaN(gawd) || !birthInput) {
+        document.getElementById('result').innerHTML = "";
+        document.getElementById('summaryBox').innerText = "입력을 완료해주세요.";
+        return;
+      }
+
+      const birthDate = new Date(birthInput);
+      const diffTime = refDate - birthDate;
+
+      if (isNaN(birthDate.getTime()) || diffTime < 0) {
+        document.getElementById('result').innerHTML = "기준일은 출생일 이후여야 합니다.";
+        document.getElementById('summaryBox').innerText = "기준일 오류";
+        return;
+      }
+
+      const daysAfterBirth = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const totalDays = (gaw * 7 + gawd) + daysAfterBirth;
+      const pmaWeeks = Math.floor(totalDays / 7);
+      const pmaDays = totalDays % 7;
+
+      const edc = new Date(birthDate.getTime());
+      edc.setDate(edc.getDate() + (280 - (gaw * 7 + gawd)));
+
+      const dobStr = formatDate(birthDate);
+      const doaStr = formatDate(birthDate);
+      const edcStr = formatDate(edc);
+
+      const summaryText = `D.O.B: ${dobStr}
+D.O.A: ${doaStr}
+E.D.C: ${edcStr}`;
+
+      document.getElementById('result').innerHTML = `
+        🗓 생후 경과일수: <b>${daysAfterBirth}</b>일<br>
+        📏 PMA: <b>${pmaWeeks}주 + ${pmaDays}일</b><br>
+        📅 EDC: <b>${edcStr}</b>
+      `;
+
+      document.getElementById('summaryBox').innerText = summaryText;
+      document.getElementById('summaryBox').dataset.clipboard = summaryText;
+    }
+
+    function copySummary() {
+      const text = document.getElementById('summaryBox').dataset.clipboard || "";
+      navigator.clipboard.writeText(text).then(() => {
+        alert("복사되었습니다:\n" + text);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("birthDate").value = today;
+      document.getElementById("referenceDate").value = today;
+
+      const inputs = document.querySelectorAll("input");
+      inputs.forEach(input => input.addEventListener("input", calculatePMA));
+
+      calculatePMA();
+    });
+  </script>
+
+</body>
+</html>

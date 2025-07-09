@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>교정연령 계산기</title>
+  <style>
+    body { font-family: sans-serif; max-width: 700px; margin: auto; padding: 2rem; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    input { padding: 0.5rem; font-size: 1rem; margin-top: 0.3rem; width: 220px; }
+    .inline { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
+    .result { margin-top: 2rem; background: #f9f9f9; padding: 1rem; border-radius: 8px; font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+
+  <h2>👶 교정연령 계산기</h2>
+
+  <label>생년월일</label>
+  <input id="birth" type="date" oninput="CAcal()">
+
+  <label>출생 시 재태연령</label>
+  <div class="inline">
+    <input id="ww" type="number" min="22" max="40" value="28" oninput="CAcal()"> 주
+    <input id="wd" type="number" min="0" max="6" value="0" oninput="CAcal()"> 일
+  </div>
+
+  <div class="result">
+    <h3>📏 계산 결과</h3>
+    <p id="d"></p>
+    <p id="e"></p>
+    <p id="f"></p>
+    <hr>
+    <p><b>🍼 교정연령</b> <span id="a"></span> <span id="b"></span> <span id="c"></span></p>
+    <p><b>🎂 생활연령</b> <span id="g"></span> <span id="h"></span> <span id="i"></span></p>
+  </div>
+
+  <script>
+    var DateDiff = {
+      inDays: function(d1, d2) {
+        var t2 = d2.getTime();
+        var t1 = d1.getTime();
+        return parseInt((t2 - t1) / (24 * 3600 * 1000));
+      },
+      inWeeks: function(d1, d2) {
+        var t2 = d2.getTime();
+        var t1 = d1.getTime();
+        return parseInt((t2 - t1) / (24 * 3600 * 1000 * 7));
+      }
+    };
+
+    function CAcal() {
+      var birthStr = document.getElementById("birth").value;
+      var ww = parseInt(document.getElementById("ww").value);
+      var wd = parseInt(document.getElementById("wd").value);
+      if (!birthStr || isNaN(ww) || isNaN(wd)) return;
+
+      var birthday = new Date(birthStr);
+      var today = new Date();
+      var needday = 280 - (ww * 7) - wd;
+      var dday = new Date(birthday.getTime() + (needday * 24 * 3600 * 1000));
+
+      var age = DateDiff.inDays(dday, today) / 30;
+      var age2 = DateDiff.inDays(birthday, today) / 30;
+
+      document.getElementById('a').innerHTML = `<b>${age.toFixed(2)} 개월</b>`;
+      document.getElementById('b').innerHTML = `(${DateDiff.inDays(dday, today)}일)`;
+      document.getElementById('c').innerHTML = `(${DateDiff.inWeeks(dday, today)}주)`;
+
+      document.getElementById('d').innerHTML = `현재 날짜: ${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+      document.getElementById('e').innerHTML = `생년월일: ${birthday.getFullYear()}년 ${birthday.getMonth() + 1}월 ${birthday.getDate()}일`;
+      document.getElementById('f').innerHTML = `출생 예정일: ${dday.getFullYear()}년 ${dday.getMonth() + 1}월 ${dday.getDate()}일`;
+
+      document.getElementById('g').innerHTML = `<b>${age2.toFixed(2)} 개월</b>`;
+      document.getElementById('h').innerHTML = `(${DateDiff.inDays(birthday, today)}일)`;
+      document.getElementById('i').innerHTML = `(${DateDiff.inWeeks(birthday, today)}주)`;
+    }
+
+    window.onload = CAcal;
+  </script>
+
+</body>
+</html>
