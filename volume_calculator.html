@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Neonatal Volume Calculator</title>
+  <style>
+    body { font-family: sans-serif; max-width: 700px; margin: auto; padding: 2rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    td { padding: 0.6rem; vertical-align: middle; }
+    input { width: 100%; padding: 0.4rem; font-size: 1rem; }
+    .result-box { background: #f4f4f4; padding: 1rem; border-radius: 10px; font-size: 1.1rem; margin-top: 1.5rem; }
+    .result-box p { margin: 0.5rem 0; cursor: pointer; }
+    .target-table { margin-top: 2rem; width: 100%; }
+    .target-table td { padding: 0.5rem 1rem; }
+    h2 { margin-top: 2rem; border-bottom: 2px solid #ccc; padding-bottom: 0.3rem; }
+  </style>
+</head>
+<body>
+
+  <h1>🍼 신생아 Volume 계산기</h1>
+
+  <table>
+    <tr>
+      <td>현 체중 (kg)</td>
+      <td><input type="number" id="weight" step="0.01" value="1.5"></td>
+    </tr>
+    <tr>
+      <td>Total volume (cc/kg/day)</td>
+      <td><input type="number" id="tv" step="1" value="75"></td>
+    </tr>
+    <tr>
+      <td>Feeding 양 (cc)</td>
+      <td><input type="number" id="feedAmt" step="0.1" value="5"></td>
+    </tr>
+    <tr>
+      <td>Feeding 간격 (hr)</td>
+      <td><input type="number" id="feedInt" step="1" value="3"></td>
+    </tr>
+  </table>
+
+  <h2>📊 Volume 계산 결과 (클릭시 결과 복사)</h2>
+  <div class="result-box" id="outputBox">
+    <p>📌 결과가 여기에 표시됩니다</p>
+  </div>
+
+  <h2>🎯 목표 Feeding 양 (cc q3hr)</h2>
+  <table class="target-table">
+    <tr><td>20cc/kg/day</td><td id="goal20"></td></tr>
+    <tr><td>30cc/kg/day</td><td id="goal30"></td></tr>
+    <tr><td>100cc/kg/day</td><td id="goal100"></td></tr>
+  </table>
+
+  <script>
+    function calculate() {
+      const w = parseFloat(document.getElementById("weight").value);
+      const tv = parseFloat(document.getElementById("tv").value);
+      const fa = parseFloat(document.getElementById("feedAmt").value);
+      const fi = parseFloat(document.getElementById("feedInt").value);
+
+      if (isNaN(w) || isNaN(tv) || isNaN(fa) || isNaN(fi)) return;
+
+      const totalVol = w * tv;
+      const npoRate = (totalVol / 24).toFixed(1);
+
+      const feedPerDay = fa * (24 / fi);
+      const feedPerKg = (feedPerDay / w).toFixed(1);
+
+      const fluidRate = ((totalVol - feedPerDay) / 24).toFixed(1);
+      const fluidVol = (totalVol - feedPerDay).toFixed(1);
+      const fluidVolPerKg = ((totalVol - feedPerDay) / w).toFixed(1);
+
+      const line1 = `${w}kg 기준, TV ${tv}cc/kg/d = ${totalVol.toFixed(1)}cc/d (NPO rate = ${npoRate} cc/hr)`;
+      const line2 = `feeding ${fa}cc q ${fi}hr = ${feedPerDay.toFixed(1)}cc/d, (feeding volume = ${feedPerKg}cc/kg/d)`;
+      const line3 = `fluid rate = ${fluidRate}cc/hr, (fluid volume = ${fluidVol}cc/d = ${fluidVolPerKg}cc/kg/d)`;
+
+      const outputBox = document.getElementById("outputBox");
+      outputBox.innerHTML = `<p onclick="copyText(this)">${line1}</p><p onclick="copyText(this)">${line2}</p><p onclick="copyText(this)">${line3}</p>`;
+
+      document.getElementById("goal20").innerText = (w * 20 / 8).toFixed(3);
+      document.getElementById("goal30").innerText = (w * 30 / 8).toFixed(3);
+      document.getElementById("goal100").innerText = (w * 100 / 8).toFixed(3);
+    }
+
+    function copyText(elem) {
+      navigator.clipboard.writeText(elem.innerText);
+      alert("복사되었습니다: " + elem.innerText);
+    }
+
+    const inputs = document.querySelectorAll("input");
+    inputs.forEach(el => el.addEventListener("input", calculate));
+
+    window.onload = calculate;
+  </script>
+
+</body>
+</html>
