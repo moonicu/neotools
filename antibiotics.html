@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Neonatal Antibiotic Dosing Guide</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+    }
+
+    /* Sidebar (left panel) */
+    .sidebar {
+      width: 250px;
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+
+    .sidebar h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #ecf0f1;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 10px 15px;
+      margin: 5px 0;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+
+    .sidebar a:hover {
+      background-color: #1abc9c;
+    }
+
+    /* Main content (right panel) */
+    .main {
+      flex-grow: 1;
+      padding: 0;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Antibiotics</h2>
+    <a href="antibiotics/ampicillin.html" target="contentFrame">Ampicillin</a>
+    <a href="antibiotics/gentamicin.html" target="contentFrame">Gentamicin</a>
+    <a href="antibiotics/cefotaxime.html" target="contentFrame">Cefotaxime</a>
+    <a href="antibiotics/tazoperan.html" target="contentFrame">Tazoperan (Piperacillin/Tazobactam)</a>
+    <a href="antibiotics/meropenem.html" target="contentFrame">Meropenem</a>
+    <a href="antibiotics/vancomycin.html" target="contentFrame">Vancomycin</a>
+    <a href="antibiotics/ampicillin_sulbactam.html" target="contentFrame">Ampicillin/Sulbactam</a>
+    <a href="antibiotics/linezolid.html" target="contentFrame">Linezolid</a>
+    <a href="antibiotics/cefepime.html" target="contentFrame">Cefepime</a>
+    <a href="antibiotics/ceftriaxone.html" target="contentFrame">Ceftriaxone</a>
+  </div>
+
+  <div class="main">
+    <iframe name="contentFrame" src="antibiotics/ampicillin.html"></iframe>
+  </div>
+</body>
+</html>
