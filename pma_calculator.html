@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>PMA 계산기</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 2rem; }
+    label { font-weight: bold; display: block; margin-top: 1.5rem; }
+    .inline { display: flex; gap: 0.5rem; align-items: center; }
+    input[type="number"], input[type="date"] {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    .result { margin-top: 2rem; font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+
+  <h2>👶 PMA (수정 후 연령) 계산기</h2>
+
+  <label>재태연령:</label>
+  <div class="inline">
+    <input type="number" id="gaw" min="20" max="45" value="30" />
+    +
+    <input type="number" id="gawd" min="0" max="6" value="0" />
+  </div>
+
+  <label>출생일:</label>
+  <input type="date" id="birthDate" />
+
+  <label>기준일 (Optional, 비워두면 오늘):</label>
+  <input type="date" id="referenceDate" />
+
+  <div class="result" id="result"></div>
+
+  <script>
+    function calculatePMA() {
+      const gaw = parseInt(document.getElementById('gaw').value);
+      const gawd = parseInt(document.getElementById('gawd').value);
+      const birthInput = document.getElementById('birthDate').value;
+      const refInput = document.getElementById('referenceDate').value;
+      const refDate = refInput ? new Date(refInput) : new Date();
+
+      if (isNaN(gaw) || isNaN(gawd) || !birthInput) {
+        document.getElementById('result').innerHTML = "";
+        return;
+      }
+
+      const birthDate = new Date(birthInput);
+      const diffTime = refDate - birthDate;
+
+      if (diffTime < 0) {
+        document.getElementById('result').innerHTML = "기준일은 출생일 이후여야 합니다.";
+        return;
+      }
+
+      const daysAfterBirth = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const totalDays = (gaw * 7 + gawd) + daysAfterBirth;
+      const pmaWeeks = Math.floor(totalDays / 7);
+      const pmaDays = totalDays % 7;
+
+      document.getElementById('result').innerHTML = `
+        🗓 생후 경과일수: <b>${daysAfterBirth}</b>일<br>
+        📏 PMA: <b>${pmaWeeks}주 + ${pmaDays}일</b>
+      `;
+    }
+
+    // 자동 계산 이벤트 연결
+    document.addEventListener("DOMContentLoaded", () => {
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("birthDate").value = today;
+      document.getElementById("referenceDate").value = today;
+
+      const inputs = document.querySelectorAll("input");
+      inputs.forEach(input => input.addEventListener("input", calculatePMA));
+
+      calculatePMA(); // 초기 계산
+    });
+  </script>
+
+</body>
+</html>
