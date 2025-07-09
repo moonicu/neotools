@@ -33,21 +33,34 @@
     <hr>
     <p><b>🍼 교정연령</b> <span id="a"></span> <span id="b"></span> <span id="c"></span></p>
     <p><b>🎂 생활연령</b> <span id="g"></span> <span id="h"></span> <span id="i"></span></p>
+    <hr>
+    <p><b>📅 교정개월 기준일</b></p>
+    <p id="m4"></p>
+    <p id="m8"></p>
+    <p id="m12"></p>
+    <p id="m18"></p>
+    <p id="m24"></p>
   </div>
 
   <script>
     var DateDiff = {
       inDays: function(d1, d2) {
-        var t2 = d2.getTime();
-        var t1 = d1.getTime();
-        return parseInt((t2 - t1) / (24 * 3600 * 1000));
+        return Math.floor((d2 - d1) / (24 * 3600 * 1000));
       },
       inWeeks: function(d1, d2) {
-        var t2 = d2.getTime();
-        var t1 = d1.getTime();
-        return parseInt((t2 - t1) / (24 * 3600 * 1000 * 7));
+        return Math.floor((d2 - d1) / (7 * 24 * 3600 * 1000));
       }
     };
+
+    function addMonths(date, months) {
+      var d = new Date(date);
+      d.setMonth(d.getMonth() + months);
+      return d;
+    }
+
+    function formatDate(date) {
+      return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+    }
 
     function CAcal() {
       var birthStr = document.getElementById("birth").value;
@@ -58,7 +71,7 @@
       var birthday = new Date(birthStr);
       var today = new Date();
       var needday = 280 - (ww * 7) - wd;
-      var dday = new Date(birthday.getTime() + (needday * 24 * 3600 * 1000));
+      var dday = new Date(birthday.getTime() + needday * 24 * 3600 * 1000);
 
       var age = DateDiff.inDays(dday, today) / 30;
       var age2 = DateDiff.inDays(birthday, today) / 30;
@@ -67,13 +80,20 @@
       document.getElementById('b').innerHTML = `(${DateDiff.inDays(dday, today)}일)`;
       document.getElementById('c').innerHTML = `(${DateDiff.inWeeks(dday, today)}주)`;
 
-      document.getElementById('d').innerHTML = `현재 날짜: ${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
-      document.getElementById('e').innerHTML = `생년월일: ${birthday.getFullYear()}년 ${birthday.getMonth() + 1}월 ${birthday.getDate()}일`;
-      document.getElementById('f').innerHTML = `출생 예정일: ${dday.getFullYear()}년 ${dday.getMonth() + 1}월 ${dday.getDate()}일`;
+      document.getElementById('d').innerHTML = `현재 날짜: ${formatDate(today)}`;
+      document.getElementById('e').innerHTML = `생년월일: ${formatDate(birthday)}`;
+      document.getElementById('f').innerHTML = `출생 예정일: ${formatDate(dday)}`;
 
       document.getElementById('g').innerHTML = `<b>${age2.toFixed(2)} 개월</b>`;
       document.getElementById('h').innerHTML = `(${DateDiff.inDays(birthday, today)}일)`;
       document.getElementById('i').innerHTML = `(${DateDiff.inWeeks(birthday, today)}주)`;
+
+      // milestone dates
+      document.getElementById('m4').innerText = `교정 4개월: ${formatDate(addMonths(dday, 4))}`;
+      document.getElementById('m8').innerText = `교정 8개월: ${formatDate(addMonths(dday, 8))}`;
+      document.getElementById('m12').innerText = `교정 12개월: ${formatDate(addMonths(dday, 12))}`;
+      document.getElementById('m18').innerText = `교정 18개월: ${formatDate(addMonths(dday, 18))}`;
+      document.getElementById('m24').innerText = `교정 24개월: ${formatDate(addMonths(dday, 24))}`;
     }
 
     window.onload = CAcal;
